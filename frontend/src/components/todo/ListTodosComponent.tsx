@@ -1,13 +1,33 @@
+import { useEffect, useState, type FC } from "react";
+import { retrieveAllTodosForUsername } from "./api/TodoApiService";
+import type { AxiosResponse } from "axios";
+
 const ListTodoComponent: FC = () => {
 
     const today = new Date();
     const targetDate = new Date(today.getFullYear() + 12, today.getMonth(), today.getDate());
 
-    const todos = [
-        {id:1, description: 'Learn React', done: false, targetDate: targetDate },
-        {id:2, description: 'Learn Java', done: false, targetDate: targetDate},
-        {id:3, description: 'Learn Spring', done: false, targetDate: targetDate},
-    ]
+    type Todo = {
+        id: number;
+        description: string;
+        done: boolean;
+        targetDate: string;
+    }
+
+    const [todos, setTodos] = useState<Todo[]>([]);
+
+    useEffect(() => refreshTodos(), []); // 컴포넌트 마운트시 한 번만 실행
+    
+    function refreshTodos() {
+        retrieveAllTodosForUsername('junes')
+            .then((res: AxiosResponse<Todo[]>) => {
+                console.log(res);
+                setTodos(res.data);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
 
     return (
         <div className='container'>
@@ -29,7 +49,7 @@ const ListTodoComponent: FC = () => {
                                     <td>{todo.id}</td>
                                     <td>{todo.description}</td>
                                     <td>{todo.done ? 'Yes' : 'No'}</td>
-                                    <td>{todo.targetDate.toDateString()}</td>
+                                    <td>{todo.targetDate.toString()}</td>
                                 </tr>
                             )) 
                         }
