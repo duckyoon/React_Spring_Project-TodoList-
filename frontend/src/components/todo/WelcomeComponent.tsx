@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useState, type FC } from 'react';
-import { retrieveHelloWorldBean } from './api/HelloWorldApiService';
+import { retrieveHelloWorldBean, retrieveHelloWorldPathVariable } from './api/HelloWorldApiService';
 import type { AxiosResponse } from 'axios';
 
 
@@ -14,19 +14,8 @@ const WelcomeComponent: FC = () => {
     function callHelloWorldApi() {
         // 여기에 API 호출 로직을 추가할 수 있습니다.
         console.log("Hello World API called");
-        
-        // axios.get(`http://localhost:8080/hello-world`)
-        //     .then(response => {
-        //         successfulResponse(response);
-        //     })
-        //     .catch(error => {
-        //         errorResponse(error);
-        //     })
-        //     .finally( () => {
-        //         console.log("API call completed");
-        //     })
 
-        retrieveHelloWorldBean()
+        retrieveHelloWorldPathVariable('Yoon')
             .then(response => {
                 successfulResponse(response);
             })

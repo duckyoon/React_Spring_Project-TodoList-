@@ -10,3 +10,6 @@ export interface HelloWorldBean {
 
 export const retrieveHelloWorldBean
     = () => apiClient.get<HelloWorldBean>(`/hello-world-bean`);
+
+export const retrieveHelloWorldPathVariable
+    = (username: string) => apiClient.get<HelloWorldBean>(`/hello-world/path-variable/${username}`);
