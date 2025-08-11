@@ -1,5 +1,5 @@
 import { useEffect, useState, type FC } from "react";
-import { retrieveAllTodosForUsername } from "./api/TodoApiService";
+import { deleteTodoApi, retrieveAllTodosForUsernameApi } from "./api/TodoApiService";
 import type { AxiosResponse } from "axios";
 
 const ListTodoComponent: FC = () => {
@@ -15,11 +15,12 @@ const ListTodoComponent: FC = () => {
     }
 
     const [todos, setTodos] = useState<Todo[]>([]);
+    const [message, setMessage] = useState<string>("");
 
     useEffect(() => refreshTodos(), []); // 컴포넌트 마운트시 한 번만 실행
     
     function refreshTodos() {
-        retrieveAllTodosForUsername('junes')
+        retrieveAllTodosForUsernameApi('junes')
             .then((res: AxiosResponse<Todo[]>) => {
                 console.log(res);
                 setTodos(res.data);
@@ -29,17 +30,31 @@ const ListTodoComponent: FC = () => {
             })
     }
 
+    function deleteTodo(id:number) {
+        console.log("clicked " + id);
+        deleteTodoApi('junes', id)
+        .then(
+            (res: AxiosResponse) => {
+            console.log(res);
+            refreshTodos();
+            setMessage(`Delete of todo ${id} successful`);
+        })
+        .catch(err => console.log(err));
+    }
+
+
     return (
         <div className='container'>
             <h2>Things you want to do!</h2>
+            {message && <div className="alert alert-success">{message}</div>}
             <div>
                 <table className="table">
                     <thead>
                         <tr>
-                            <td>Id</td>
                             <td>Description</td>
                             <td>Done</td>
                             <td>Target Date</td>
+                            <td>Delete</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,6 +65,7 @@ const ListTodoComponent: FC = () => {
                                     <td>{todo.description}</td>
                                     <td>{todo.done ? 'Yes' : 'No'}</td>
                                     <td>{todo.targetDate.toString()}</td>
+                                    <td><button className="btn btn-warning" onClick={() => deleteTodo(todo.id)}>Delete</button></td>
                                 </tr>
                             )) 
                         }

@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9f902be5-582d-41d7-8658-9f1c5f29f5d3" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/in28minutes/rest/webservices/restfulwebservices/todo/TodoResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/in28minutes/rest/webservices/restfulwebservices/todo/TodoResource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.jdt.core.prefs" beforeDir="false" afterPath="$PROJECT_DIR$/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/in28minutes/rest/webservices/restfulwebservices/todo/TodoService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/in28minutes/rest/webservices/restfulwebservices/todo/TodoService.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,12 +23,12 @@
     &quot;assignee&quot;: &quot;duckyoon&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/duckyoon/React_Spring_Project-TodoList-.git",
-    "accountId": "07b90d52-2b19-48b5-89fa-6ad7659bf6ce"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/duckyoon/React_Spring_Project-TodoList-.git&quot;,
+    &quot;accountId&quot;: &quot;07b90d52-2b19-48b5-89fa-6ad7659bf6ce&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
