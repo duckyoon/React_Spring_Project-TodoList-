@@ -2,6 +2,7 @@ import { useEffect, useState, type FC } from "react";
 import { deleteTodoApi, retrieveAllTodosForUsernameApi } from "./api/TodoApiService";
 import type { AxiosResponse } from "axios";
 import { useAuth } from "./security/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ListTodoComponent: FC = () => {
 
@@ -10,6 +11,8 @@ const ListTodoComponent: FC = () => {
 
     const authContext = useAuth(); // AuthContext 사용
     const username = authContext.username || 'junes'; // 기본값으로 'junes' 사용
+
+    const navigate = useNavigate();
 
     type Todo = {
         id: number;
@@ -46,6 +49,19 @@ const ListTodoComponent: FC = () => {
         .catch(err => console.log(err));
     }
 
+    function updateTodo(id:number) {
+        console.log("clicked " + id);
+        navigate(`/todos/${id}`)
+        // deleteTodoApi(username, id)
+        // .then(
+        //     (res: AxiosResponse) => {
+        //     console.log(res);
+        //     refreshTodos();
+        //     setMessage(`Delete of todo ${id} successful`);
+        // })
+        // .catch(err => console.log(err));
+    }
+
 
     return (
         <div className='container'>
@@ -59,17 +75,18 @@ const ListTodoComponent: FC = () => {
                             <td>Done</td>
                             <td>Target Date</td>
                             <td>Delete</td>
+                            <td>Update</td>
                         </tr>
                     </thead>
                     <tbody>
                         {
                             todos.map((todo) => (
                                 <tr key={todo.id}>
-                                    <td>{todo.id}</td>
                                     <td>{todo.description}</td>
                                     <td>{todo.done ? 'Yes' : 'No'}</td>
                                     <td>{todo.targetDate.toString()}</td>
                                     <td><button className="btn btn-warning" onClick={() => deleteTodo(todo.id)}>Delete</button></td>
+                                    <td><button className="btn btn-success" onClick={() => updateTodo(todo.id)}>Update</button></td>
                                 </tr>
                             )) 
                         }
