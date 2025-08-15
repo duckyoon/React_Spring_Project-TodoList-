@@ -3,7 +3,7 @@ import { retrieveTodoApi } from "./api/TodoApiService"
 import { useAuth } from "./security/AuthContext"
 import { useEffect, useState } from "react"
 import type { AxiosResponse } from "axios";
-import { Field, Formik, Form } from "formik";
+import { Field, Formik, Form, ErrorMessage } from "formik";
 
 
 // Formik 폼에서 사용할 값 타입
@@ -58,7 +58,7 @@ export default function TodoComponent() {
         .then((res: AxiosResponse) => {
             console.log(res.data);
             setDescription(res.data.description ?? "");
-            setTargetDate(res.date.targetDate ?? new Date());
+            setTargetDate(res.data.targetDate ?? new Date());
         })
         .catch((err) => console.log(err))
             
@@ -69,6 +69,27 @@ export default function TodoComponent() {
         console.log(values)
     }
 
+    // Formik validat 함수
+    const validate = (values: todoValues) => {
+        
+        const errors: Partial<Record<keyof todoValues, string>> = {};
+        
+        // description 검사
+        const desc = values.description.trim() ?? "";
+        if (!desc) {
+            errors.description = 'Enter at a valid description'
+        } else if (desc.length < 5) {
+            errors.description = 'Enter at least 5 characters'
+        }
+
+        // targetDate 검사
+        if (values.targetDate == null) {
+            errors.targetDate = 'Enter a target date'
+        }
+        console.log(values)
+        return errors
+    }
+
     return (
         <div className="container">
             <h1>Enter Todo Details</h1>
@@ -77,12 +98,25 @@ export default function TodoComponent() {
                 <Formik<todoValues>
                     initialValues={ {description, targetDate } } // 초기값
                     enableReinitialize= {true} // initialValues 변경 시 폼 값 자동 업데이트
-                    validationSchema={""} // Yub으로 유효성 검사 추가 가능
+                    validate={validate} // 유효성 검사 추가
+                    validateOnChange= {false}   // 값 입력 시마다 검증하지 않음
+                    validateOnBlur= {false}     // 포커스 아웃 시 검증하지 않음
                     onSubmit={onSubmit} // 제출 시 실행
                     >
                     {
                         (props) => (
                             <Form>
+                                <ErrorMessage
+                                    name="description"
+                                    component="div"
+                                    className="alert alert-warning"
+                                 />
+                                 <ErrorMessage
+                                    name="targetDate"
+                                    component="div"
+                                    className="alert alert-warning"
+                                 />
+
                                 <fieldset className="form-group">
                                     <label htmlFor="">Description</label>
                                     <Field type="text" className="form-control" name="description"></Field>
