@@ -1,9 +1,10 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
-import { retrieveTodoApi, updateTodoApi } from "./api/TodoApiService"
+import { createTodoApi, retrieveTodoApi, updateTodoApi } from "./api/TodoApiService"
 import { useAuth } from "./security/AuthContext"
 import { useEffect, useState } from "react"
 import type { AxiosResponse } from "axios";
 import { Field, Formik, Form, ErrorMessage } from "formik";
+import moment from "moment";
 
 
 // Formik 폼에서 사용할 값 타입
@@ -57,36 +58,52 @@ export default function TodoComponent() {
         console.log(username, todoId)
         if (!username || Number.isNaN(todoId)) return;
 
-        retrieveTodoApi(username!, todoId) 
-        .then((res: AxiosResponse) => {
-            console.log(res.data);
-            setDescription(res.data.description ?? "");
-            setTargetDate(res.data.targetDate ?? new Date());
-        })
-        .catch((err) => console.log(err))
-            
+        if (todoId != -1) { // todoId 가 -1 이면 불러오지 않음
+            retrieveTodoApi(username!, todoId) 
+            .then((res: AxiosResponse) => {
+                console.log(res.data);
+                setDescription(res.data.description ?? "");
+                setTargetDate(res.data.targetDate ?? new Date());
+            })
+            .catch((err) => console.log(err))
+        }
     }
 
     // Formik onSubmit 상태 핸들러 -> Todo 수정 요청
     const onSubmit = (values: todoValues) => {
         console.log(values)
 
-        const todo = {
-            id: id,     // url에서 받은 id
+        const payload = {
+            id: todoId,     // url에서 받은 id
             username: username, // 로그인 사용자
             description: values.description.trim(), // 공백 제거 후 저장
             targetDate: values.targetDate,
             done: false
         }
 
-        updateTodoApi(username, id, todo)
-        .then((res: AxiosResponse) => {
-            // 수정 성공 시 상태 반영 및 목록으로 이동
-            setDescription(res.data.description);
-            setTargetDate(res.data.targetDate);
-            navigate(`/todos`);
-        })
-        .catch((err) => console.log(err))
+
+
+        if (!username) {
+            console.log('No username');
+            return
+        }
+
+        if(todoId === -1) {
+            createTodoApi(username, payload)
+            .then((res: AxiosResponse<any>) => {
+                navigate(`/todos`)
+            })
+            .catch ((err) => console.log(err))
+        } else {
+            updateTodoApi(username, todoId, payload)
+            .then((res: AxiosResponse<any>) => {
+                // 수정 성공 시 상태 반영 및 목록으로 이동
+                setDescription(res.data.description);
+                setTargetDate(res.data.targetDate);
+                navigate(`/todos`);
+            })
+            .catch((err) => console.log(err))
+        }
 
     }
 
@@ -104,7 +121,7 @@ export default function TodoComponent() {
         }
 
         // targetDate 검사
-        if (values.targetDate == null) {
+        if (values.targetDate == null || values.targetDate == '' || !moment(values.targetDate).isValid()) {
             errors.targetDate = 'Enter a target date'
         }
         console.log(values)
