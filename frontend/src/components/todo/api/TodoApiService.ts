@@ -20,3 +20,6 @@ export const deleteTodoApi
 export const retrieveTodoApi
     = (username:string, id:number) => apiClient.get<TodoBean>(`/users/${username}/todos/${id}`);
 
+export const updateTodoApi = (username: string, id: number, todo: TodoBean) => {
+    return apiClient.put<TodoBean>(`/users/${username}/todos/${id}`, todo);
+}

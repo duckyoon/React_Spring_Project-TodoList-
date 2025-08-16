@@ -1,5 +1,5 @@
-import { useParams, useSearchParams } from "react-router-dom"
-import { retrieveTodoApi } from "./api/TodoApiService"
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { retrieveTodoApi, updateTodoApi } from "./api/TodoApiService"
 import { useAuth } from "./security/AuthContext"
 import { useEffect, useState } from "react"
 import type { AxiosResponse } from "axios";
@@ -43,6 +43,9 @@ export default function TodoComponent() {
     const authContext = useAuth()
     const username = authContext.username
 
+    // 수정 완료 후 목록 페이지로 이동하기
+    const navigate = useNavigate()
+
     // 컴포넌트 마운트 (username, todoId 변경 시 데이터 조회)
     useEffect(() => {
             retrieveTodo();
@@ -64,9 +67,27 @@ export default function TodoComponent() {
             
     }
 
-    // Formik onSubmit 상태 핸들러
+    // Formik onSubmit 상태 핸들러 -> Todo 수정 요청
     const onSubmit = (values: todoValues) => {
         console.log(values)
+
+        const todo = {
+            id: id,     // url에서 받은 id
+            username: username, // 로그인 사용자
+            description: values.description.trim(), // 공백 제거 후 저장
+            targetDate: values.targetDate,
+            done: false
+        }
+
+        updateTodoApi(username, id, todo)
+        .then((res: AxiosResponse) => {
+            // 수정 성공 시 상태 반영 및 목록으로 이동
+            setDescription(res.data.description);
+            setTargetDate(res.data.targetDate);
+            navigate(`/todos`);
+        })
+        .catch((err) => console.log(err))
+
     }
 
     // Formik validat 함수
