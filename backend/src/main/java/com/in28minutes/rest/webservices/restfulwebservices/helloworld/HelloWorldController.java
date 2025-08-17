@@ -20,5 +20,11 @@ public class HelloWorldController {
 	@GetMapping(path = "/hello-world/path-variable/{name}")
 	public HelloWorldBean helloWorldPathVariable(@PathVariable String name) {
 		return new HelloWorldBean(String.format("Hello World, %s", name)); 
-	}	
+	}
+	
+	// 기본 인증 테스트 URL 설정
+	@GetMapping(path = "/basicauth")
+	public String basicAuthCheck() {
+		return "Success";
+	}
 }

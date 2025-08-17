@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { executeBasicAuthenticationService } from '../api/HelloWorldApiService';
 
 // 1. Context 데이터 타입 정의
 type AuthContextType = {
@@ -41,16 +42,30 @@ export default function AuthProvider({children }: AuthProviderProps) {
 
     const [username, setUsername] = useState<string| undefined>(undefined);
 
+    // const login = (username: string, password: string): boolean => {
+    //     if (username === 'junes' && password === '1234') {
+    //         setIsAuthenticated(true); // 인증 상태 업데이트
+    //         setUsername(username); // 로그인 성공 시 username 설정
+    //         return true; // 로그인 성공 시 true 반환
+    //     } else {
+    //         setIsAuthenticated(false); // 인증 실패 시 상태 업데이트
+    //         setUsername(undefined); // 로그인 실패 시 username 초기화
+    //         return false; // 로그인 실패 시 false 반환
+    //     }
+    // }
+
+
+    // 로그인 함수 정의(username, password 받아서 Basic Auth 토큰을 생성)
     const login = (username: string, password: string): boolean => {
-        if (username === 'junes' && password === '1234') {
-            setIsAuthenticated(true); // 인증 상태 업데이트
-            setUsername(username); // 로그인 성공 시 username 설정
-            return true; // 로그인 성공 시 true 반환
-        } else {
-            setIsAuthenticated(false); // 인증 실패 시 상태 업데이트
-            setUsername(undefined); // 로그인 실패 시 username 초기화
-            return false; // 로그인 실패 시 false 반환
-        }
+
+
+        const baToekn = 'Basic ' + window.btoa(username + ":" + password) // base64 인코딩
+        executeBasicAuthenticationService(baToekn)
+        .then( res => console.log(res))
+        .catch( err => console.log(err))
+
+        setIsAuthenticated(false)
+        return false;
     }
 
     const logout = () => {
