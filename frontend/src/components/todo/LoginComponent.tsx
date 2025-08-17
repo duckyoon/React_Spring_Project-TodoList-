@@ -19,8 +19,8 @@ const LoginComponent: FC = () => {
         setPassword(event.target.value);
     }
 
-    function handleSubmit() {
-        if (authContext.login(username, password)) {
+    async function handleSubmit() {
+        if (await authContext.login?.(username, password)) {
             navigate(`/welcome/${username}`); // 로그인 성공 시 Welcome 페이지로 이동
         } else {
             setShowErrorMessage(true);

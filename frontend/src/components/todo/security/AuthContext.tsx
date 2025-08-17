@@ -8,9 +8,10 @@ type AuthContextType = {
     isAuthenticated?: boolean; // 선택적 속성으로 정의
     setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>; // 선택적 함수로 정의
 
-    login: (username: string, password: string) => boolean; // 로그인 함수 정의
+    login: (username: string, password: string) => Promise<boolean>; // 로그인 함수 정의
     logout: () => void; // 로그아웃 함수 정의
     username?: string;
+    token : string;
 }
 
 // 2. Context 생성 (초기값은 null로 싯작, 단 타입 단언 필요)
@@ -42,6 +43,8 @@ export default function AuthProvider({children }: AuthProviderProps) {
 
     const [username, setUsername] = useState<string| undefined>(undefined);
 
+    const [token, setToken] = useState<string| undefined>(undefined);
+
     // const login = (username: string, password: string): boolean => {
     //     if (username === 'junes' && password === '1234') {
     //         setIsAuthenticated(true); // 인증 상태 업데이트
@@ -56,24 +59,37 @@ export default function AuthProvider({children }: AuthProviderProps) {
 
 
     // 로그인 함수 정의(username, password 받아서 Basic Auth 토큰을 생성)
-    const login = (username: string, password: string): boolean => {
+    const login = async (username: string, password: string): Promise<boolean> => {
 
-
-        const baToekn = 'Basic ' + window.btoa(username + ":" + password) // base64 인코딩
-        executeBasicAuthenticationService(baToekn)
-        .then( res => console.log(res))
-        .catch( err => console.log(err))
-
-        setIsAuthenticated(false)
-        return false;
+        const baToken = 'Basic ' + window.btoa(username + ":" + password) // base64 인코딩
+        
+        try {
+            const response = await executeBasicAuthenticationService(baToken)
+    
+            if (response.status == 200) {
+                setIsAuthenticated(true); 
+                setUsername(username); 
+                setToken(baToken)
+                return true;    // 로그인 성공
+            } else {
+                logout();
+                return false;   // 인증 실패
+            }
+        } catch(err) {
+            logout();
+            return false;       // 에러 발생 시 false
+        }
+        
     }
 
     const logout = () => {
-        setIsAuthenticated(false); // 로그아웃 시 인증 상태 업데이트
+        setIsAuthenticated(false);
+        setUsername(undefined);
+        setToken(undefined);
     }
 
     return (
-        <AuthContext.Provider value={ { isAuthenticated, login, logout, username } }>
+        <AuthContext.Provider value={ { isAuthenticated, login, logout, username, token } }>
             {/* 하위 컴포넌트에 value 공유 */}
             {children}
         </AuthContext.Provider>
