@@ -2,6 +2,7 @@ import apiClient from './apiClient';
 
 export interface HelloWorldBean {
     message: string;
+    token : string;
 }
 
 export interface TokenBean {
@@ -16,14 +17,14 @@ export const retrieveHelloWorldBean
     = () => apiClient.get<HelloWorldBean>(`/hello-world-bean`);
 
 export const retrieveHelloWorldPathVariable
-    = (username: string) => apiClient.get<HelloWorldBean>(`/hello-world/path-variable/${username}`, {
+    = (username: string, token?:string) => apiClient.get<HelloWorldBean>(`/hello-world/path-variable/${username}`, {
         headers: {
-            Authorization: 'Basic Auth'
+            Authorization: token
         }
     });
 
 export const executeBasicAuthenticationService
-    = (token: string) => apiClient.get<TokenBean>(`/basicauth`, {
+    = (token: string) => apiClient.get<HelloWorldBean>(`/basicauth`, {
         headers: {
             Authorization: token
         }

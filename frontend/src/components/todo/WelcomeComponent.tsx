@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useState, type FC } from 'react';
 import { retrieveHelloWorldBean, retrieveHelloWorldPathVariable } from './api/HelloWorldApiService';
 import type { AxiosResponse } from 'axios';
+import { useAuth } from './security/AuthContext';
 
 
 const WelcomeComponent: FC = () => {
@@ -9,13 +10,15 @@ const WelcomeComponent: FC = () => {
     console.log("WelcomeComponent rendered with username:", username);
     const [message, setMessage] = useState<string>("");
 
+    const authContext = useAuth();
+
     console.log(username);
 
     function callHelloWorldApi() {
         // 여기에 API 호출 로직을 추가할 수 있습니다.
         console.log("Hello World API called");
 
-        retrieveHelloWorldPathVariable('Yoon')
+        retrieveHelloWorldPathVariable('Yoon', authContext.token)
             .then(response => {
                 successfulResponse(response);
             })
