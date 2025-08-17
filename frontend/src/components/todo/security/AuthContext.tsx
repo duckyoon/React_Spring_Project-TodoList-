@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { executeBasicAuthenticationService } from '../api/HelloWorldApiService';
+import apiClient from '../api/apiClient';
 
 // 1. Context 데이터 타입 정의
 type AuthContextType = {
@@ -45,19 +46,6 @@ export default function AuthProvider({children }: AuthProviderProps) {
 
     const [token, setToken] = useState<string| undefined>(undefined);
 
-    // const login = (username: string, password: string): boolean => {
-    //     if (username === 'junes' && password === '1234') {
-    //         setIsAuthenticated(true); // 인증 상태 업데이트
-    //         setUsername(username); // 로그인 성공 시 username 설정
-    //         return true; // 로그인 성공 시 true 반환
-    //     } else {
-    //         setIsAuthenticated(false); // 인증 실패 시 상태 업데이트
-    //         setUsername(undefined); // 로그인 실패 시 username 초기화
-    //         return false; // 로그인 실패 시 false 반환
-    //     }
-    // }
-
-
     // 로그인 함수 정의(username, password 받아서 Basic Auth 토큰을 생성)
     const login = async (username: string, password: string): Promise<boolean> => {
 
@@ -66,10 +54,21 @@ export default function AuthProvider({children }: AuthProviderProps) {
         try {
             const response = await executeBasicAuthenticationService(baToken)
     
-            if (response.status == 200) {
+            if (response.status === 200) {
                 setIsAuthenticated(true); 
                 setUsername(username); 
                 setToken(baToken)
+
+                // 인터셉터 대신 기본 헤더에 넣는게 중복 등록 문제 없음
+                apiClient.defaults.headers.common["Authorization"] = baToken
+
+                // apiClient.interceptors.request.use(
+                //     (config) => {
+                //         console.log('intercepting and add a token')
+                //         config.headers.Authorization(baToken)
+                //     }
+                // )
+
                 return true;    // 로그인 성공
             } else {
                 logout();
@@ -86,6 +85,7 @@ export default function AuthProvider({children }: AuthProviderProps) {
         setIsAuthenticated(false);
         setUsername(undefined);
         setToken(undefined);
+        delete apiClient.defaults.headers.common["Authorization"]; // 전역 헤더 정리
     }
 
     return (
